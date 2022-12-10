@@ -71,7 +71,8 @@ namespace Cooopppy
                             parseIndex = 0;
                         parseAssign = true;
                         hasClipboardChanged = false;
-                        Clipboard.SetDataObject(Records[parseIndex]);
+                        if (Records.Count > 0)
+                            Clipboard.SetDataObject(Records[parseIndex]);
                     }
                 }
             });
