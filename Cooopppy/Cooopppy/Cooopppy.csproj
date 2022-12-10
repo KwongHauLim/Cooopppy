@@ -105,5 +105,17 @@
   <ItemGroup>
     <Resource Include="icons8-paste-96.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="icons8-pin-50.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="icons8-delete-trash-64.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="icons8-comma-67.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="icons8-shutdown-52.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

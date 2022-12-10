@@ -32,6 +32,7 @@ namespace Cooopppy
 
         public bool Enabled { get; set; } = true;
         public bool LockCapture { get; set; } = false;
+        public bool SplitLines { get; set; } = true;
         public List<string> Records { get; set; } = new List<string>();
 
         public MainWindow()
@@ -98,15 +99,36 @@ namespace Cooopppy
                             {
                                 Dispatcher.Invoke(() =>
                                 {
-                                    var s = Clipboard.GetText();
-                                    Records.Add(s);
+                                    var text = Clipboard.GetText();
+                                    var list = new List<string>();
 
-                                    s = s.Replace(Environment.NewLine, "\\n");
-                                    if (s.Length >= 13)
-                                        s = s.Substring(0, 13) + "...";
-                                    var btn = new Button();
-                                    btn.Content = s;
-                                    uiList.Children.Add(btn);
+                                    if (SplitLines)
+                                        list.AddRange(text.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries));
+                                    else
+                                        list.Add(text);
+
+                                    foreach (var item in list)
+                                    {
+                                        Records.Add(item);
+
+                                        var s = item.Replace(Environment.NewLine, "\\n");
+                                        if (s.Length >= 13)
+                                            s = s.Substring(0, 13) + "...";
+                                        var btn = new Button();
+                                        btn.Content = s;
+                                        btn.Tag = uiList.Children.Count;
+                                        btn.Click += (sBtn,_) =>
+                                        {
+                                            if (sBtn is Button button && button.Tag is int idx && idx >= 0 && idx < Records.Count)
+                                            {
+                                                parseIndex = idx - 1;
+                                                parseAssign = true;
+                                                hasClipboardChanged = false;
+                                                Clipboard.SetDataObject(Records[idx]);
+                                            }
+                                        };
+                                        uiList.Children.Add(btn); 
+                                    }
 
                                     parseAssign = true;
                                     hasClipboardChanged = false;
@@ -144,6 +166,35 @@ namespace Cooopppy
                 }
                 base.WndProc(ref m);
             }
+        }
+
+        private void OnClick_Clear(object sender, MouseButtonEventArgs e)
+        {
+            Records.Clear();
+            uiList.Children.Clear();
+        }
+
+        private void OnClick_Pin(object sender, MouseButtonEventArgs e)
+        {
+            LockCapture = !LockCapture;
+            if (LockCapture)
+                uiPin.OpacityMask = Brushes.Black;
+            else
+                uiPin.OpacityMask = new SolidColorBrush(Color.FromArgb(75,255,255,255));
+        }
+
+        private void OnClick_Splits(object sender, MouseButtonEventArgs e)
+        {
+            SplitLines = !SplitLines;
+            if (SplitLines)
+                uiSplit.OpacityMask = Brushes.Black;
+            else
+                uiSplit.OpacityMask = new SolidColorBrush(Color.FromArgb(75, 255, 255, 255));
+        }
+
+        private void OnClick_Shutdown(object sender, MouseButtonEventArgs e)
+        {
+            Close();
         }
     }
 
